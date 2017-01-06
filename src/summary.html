@@ -1,0 +1,132 @@
+<html>
+  <head>
+	<title>虎扑湿乎乎话题</title>
+	<meta content="text/html; charset=utf8" http-equiv="Content-Type">
+	<link rel="stylesheet" href="jquery-ui.css" />
+	<script src="jquery-1.8.0.js"></script>
+	<script src="jquery-ui.js"></script>
+	<style>
+	  .search_word{word-wrap:break-word;width:353px;}
+	  .search_num{width:100px;}
+	  .click_num{width:100px;}
+	  .cmp{width:100px;}
+	  .show_result,.show_page{display:none;}
+	  .change_page{display:inline-block;width:30px;}
+	  table{text-align:left;}
+	  table td{border-bottom:0.5px solid;}
+	  .date{width:80px;}
+	  .in_search_num,.in_click_num{width:60px;}
+	  .loading{display:none;}
+	  .suggest{display:none;}
+	</style>
+  </head>
+  <body>
+  <tr>
+  <td > <font size=5> <B>搜索</B> </font> </td>
+  </tr><br><br><br>
+
+  <tr>
+  <div> 
+    <div>
+    	<span>搜索配置</span>
+		<select id="search_field"><option value="text">正文</option><option value="title">标题</option><option value="content">正文</option><option value="user">用户</option></select>
+    	<select id="sort_type"><option value="rank">综合</option><option value="me">我的规则</option><option value="pdate">时间</option><option value="pvnum">浏览量</option><option value="reply">评论</option></select>
+    	<input type="text" name="content"/>
+    	<button id="query">查询</button>
+	<input type="hidden" name="page" value="1"/>
+    </div>
+	<div style="font-size:10px">
+	 ************ <br>
+	 **使用说明** 数据来自湿乎乎的话题:bbs.hupu.com/vote，实时更新，截止到11年，支持各种条件的查询，不过一般默认选项就已经满足<br>
+	 ************
+	</div>
+  </div>
+  <hr/>
+  <table class="show_result" >
+    <thead>
+	  <th class="title">标题</th>
+	  <th class="author">作者</th>
+	  <th class="remarks">评论</th>
+	  <th class="pvnum">浏览</th>
+	</thead>
+  	<div id="suggest"></div>
+	<br>
+	<tbody id="result"></tbody>
+  </table>
+  <br> <br>
+  <div class="show_page"></div>
+  <div id="debug"></div>
+  <div class="loading"> 正在加载数据，请等待……</div>
+  <script type="text/javascript">
+  $(document).ready(function(){
+	$(".change_page").live('click',function(){
+		$("input[name='page']").val($(this).html());
+		show_result();
+	});
+  });
+  function pager(total_page){
+	  $(".show_page").html('');
+	  for(i=1;i<=total_page;i++){
+		  $(".show_page").append('<a href="javascript:void(0);" class="change_page">'+i+'</a>');
+	  }
+  }
+  function show_result(){
+	  	  var query 			= $("input[name='content']").val();
+		  var search_field 		= $("#search_field").val();
+		  var sort_type 		= $("#sort_type").val();
+		  var page 				= $("input[name='page']").val();
+		  var debug    			= false;
+		  var dataType 			= "json";
+		  if(debug){
+		 //     dataType = "text";
+		  }
+		  	$(".show_result").hide();
+			$(".show_page").hide();
+			$(".suggest").hide();
+			$(".loading").show();
+
+		  $.ajax({
+		    url:"summary.php",
+			type:"get",
+			data:"query="+query+"&field="+search_field+"&sort="+sort_type+"&page="+page,
+			dataType:dataType,
+			success:function(result){
+			  $(".loading").hide();
+			  var data = result['data'];
+			  var total_page = result['total_page'];
+			  var suggest = result['sug'];
+			  if(debug){
+			    $("#debug").html(result['data'][0]['title']);
+			  	$(".debug").show();
+			//	return true;
+			  }
+			  $("#suggest").html("为您推荐:<b>" + suggest + "</b>")
+			  $(".suggest").show()
+			  $("#result").html('');
+			  for(var i in data){
+			    var record = data[i];
+				var title = record['title'];
+				var author = record['author'];
+				var remarks = record['reply'];
+				var pvnum = record['pvnum'];
+				var url = record['url'];
+				var title_href = '<a href="'+url+'" target="_blank">'+title+'</a>';
+				//console.info(title);
+				$("#result").append('<tr><td>'+title_href+'</td><td>'+author+'</td><td>'+remarks+'</td><td>'+pvnum+'</td></tr/>');
+			  }
+			  $(".show_result").show();
+			  pager(total_page);
+			  $(".show_page").show();
+			}
+		  });
+  }
+  
+
+  $("#query").click(function(){
+	  $("input[name='page']").val(1);
+	  console.info("it's here.");
+      show_result();
+		  });
+  </script>
+  </body>
+</html>

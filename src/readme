@@ -1,0 +1,7 @@
+auto_run.sh  --- 每隔一个小时跑的脚本，抓取+解析+入solr
+cut.py --- word2vec分词
+spider.py --- 抓取解析脚本
+summary.html  --- 搜索界面
+summary.php --- 功能支持的php脚本
+trans.py --- 较抓取数据转化成可以入solr的格式
+suggest.py --- suggest功能的脚本
