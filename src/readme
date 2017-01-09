@@ -1,7 +1,30 @@
-auto_run.sh  --- 每隔一个小时跑的脚本，抓取+解析+入solr
-cut.py --- word2vec分词
-spider.py --- 抓取解析脚本
-summary.html  --- 搜索界面
-summary.php --- 功能支持的php脚本
-trans.py --- 较抓取数据转化成可以入solr的格式
-suggest.py --- suggest功能的脚本
+- auto_run.sh
+ - 每隔一个小时跑的脚本
+ - 抓取+解析+入solr
+ - 入solr的操作选了较多都不成功，使用curl 'http://localhost:8983/solr/hupu/update?commit=true' --data-binary @/root/hupu/data/solr.json.fresh -H 'Content-type:application/json' 成功
+- cut.py 
+ - jieba分词, pip install jieba
+ - word2vec分词
+ - 去除stopword
+- spider.py 
+ - 抓取解析脚本
+ - 监控首页 http://bbs.hupu.com/vote
+ - BeautifulSoup 解析网页标签，有较多不成功的，直接忽略
+- summary.html  
+ - 搜索界面
+ - html + css + ajax + php，只是入门级，调试起来较方便
+- summary.php 
+ - 功能支持的php脚本
+ - 下游请求solr和suggest
+ - merge结果展示
+- trans.py 
+ - 较抓取数据转化成可以入solr的格式
+ - 数组方式，参考了book.json
+- suggest.py 
+ - suggest功能的脚本
+ - python web起服务
+ - 分析word2vec产生的词向量映射文件
+ - 响应请求，并返回top10相关的词
+
+ ---
+ **以上脚本需要串起来执行**
